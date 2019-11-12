@@ -5,6 +5,7 @@
  */
 package mx.com.itesz.rest.dto;
 
+import java.sql.Time;
 import java.util.Date;
 
 /**
@@ -19,15 +20,15 @@ public class Actos {
     private Docentes noDocenteS;
     private Docentes noDocenteV;
     private Date fechaPresentacion;
-    private Date horaInicio;
-    private Date horaFin;
+    private Time horaInicio;
+    private Time horaFin;
     private String dictamen;
     private String estatus;
 
     public Actos() {
     }
 
-    public Actos(int idActo, Solicitudes solicitud, Salas sala, Docentes noDocenteP, Docentes noDocenteS, Docentes noDocenteV, Date fechaPresentacion, Date horaInicio, Date horaFin, String dictamen, String estatus) {
+    public Actos(int idActo, Solicitudes solicitud, Salas sala, Docentes noDocenteP, Docentes noDocenteS, Docentes noDocenteV, Date fechaPresentacion, Time horaInicio, Time horaFin, String dictamen, String estatus) {
         this.idActo = idActo;
         this.solicitud = solicitud;
         this.sala = sala;
@@ -101,7 +102,7 @@ public class Actos {
         return horaInicio;
     }
 
-    public void setHoraInicio(Date horaInicio) {
+    public void setHoraInicio(Time horaInicio) {
         this.horaInicio = horaInicio;
     }
 
@@ -109,7 +110,7 @@ public class Actos {
         return horaFin;
     }
 
-    public void setHoraFin(Date horaFin) {
+    public void setHoraFin(Time horaFin) {
         this.horaFin = horaFin;
     }
 
