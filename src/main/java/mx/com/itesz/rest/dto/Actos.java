@@ -6,7 +6,7 @@
 package mx.com.itesz.rest.dto;
 
 import java.sql.Time;
-import java.util.Date;
+import java.sql.Date;
 
 /**
  *
@@ -98,7 +98,7 @@ public class Actos {
         this.fechaPresentacion = fechaPresentacion;
     }
 
-    public Date getHoraInicio() {
+    public Time getHoraInicio() {
         return horaInicio;
     }
 
@@ -106,7 +106,7 @@ public class Actos {
         this.horaInicio = horaInicio;
     }
 
-    public Date getHoraFin() {
+    public Time getHoraFin() {
         return horaFin;
     }
 

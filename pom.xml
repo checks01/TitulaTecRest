@@ -141,6 +141,7 @@
                     <sourceDestDir>src/main/java</sourceDestDir>
                     <wsdlUrls>
                         <wsdlUrl>http://localhost:8080/UtilsTecWs/Reportes?wsdl</wsdlUrl>
+                        <wsdlUrl>http://localhost:8080/UtilsTecWs/EmailService?wsdl</wsdlUrl>
                     </wsdlUrls>
                 </configuration>
             </plugin>

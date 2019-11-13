@@ -33,7 +33,6 @@ public class DocentesDao {
             query.append("       CAR.nombre AS CARRERA, ");
             query.append("       US.idusuario, ");
             query.append("       US.email, ");
-            query.append("       US.clave, ");
             query.append("       US.nombre, ");
             query.append("       D.escolaridad, ");
             query.append("       D.especialidad, ");
@@ -56,7 +55,6 @@ public class DocentesDao {
                 Usuarios usuario = new Usuarios();
                 usuario.setIdUsuario(rs.getInt("idusuario"));
                 usuario.setEmail(rs.getString("email"));
-                usuario.setClave(rs.getString("clave"));
                 usuario.setNombre(rs.getString("nombre"));
                 
                 Docentes docentes = new Docentes();
