@@ -17,6 +17,7 @@ import mx.com.itesz.rest.interfaces.ParametrosReporte;
 import mx.com.msc.servicios.ws.GeneraReporte.Parametros;
 import mx.com.msc.servicios.ws.Reportes;
 import mx.com.msc.servicios.ws.Reportes_Service;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 
 /**
@@ -32,7 +33,7 @@ public class ReportesService {
         File reporteFile = null;
         try {
             reporteBase64 = generaReporte(nombreReporte, extension, getParametrosReporte(parametrosReporte));
-            decodeBuffer = new sun.misc.BASE64Decoder().decodeBuffer(reporteBase64);
+            decodeBuffer = new Base64().decode(reporteBase64);
             reporteFile = new File(nombreReporte.concat(".").concat(extension));
             FileUtils.writeByteArrayToFile(reporteFile, decodeBuffer);
         } catch (IOException e) {
