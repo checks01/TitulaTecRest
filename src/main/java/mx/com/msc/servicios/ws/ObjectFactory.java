@@ -1,4 +1,3 @@
-
 package mx.com.msc.servicios.ws;
 
 import javax.xml.bind.JAXBElement;
@@ -19,24 +18,27 @@ import javax.xml.namespace.QName;
  * type definitions, element declarations and model 
  * groups.  Factory methods for each of these are 
  * provided in this class.
- * 
+ *
  */
 @XmlRegistry
 public class ObjectFactory {
 
     private final static QName _GeneraReporteResponse_QNAME = new QName("http://servicios.msc.mx.com/", "generaReporteResponse");
     private final static QName _GeneraReporte_QNAME = new QName("http://servicios.msc.mx.com/", "generaReporte");
+    private final static QName _EnviaCorreo_QNAME = new QName("http://servicios.msc.mx.com/", "enviaCorreo");
+    private final static QName _EnviaCorreoResponse_QNAME = new QName("http://servicios.msc.mx.com/", "enviaCorreoResponse");
 
     /**
-     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: mx.com.msc.servicios.ws
-     * 
+     * Create a new ObjectFactory that can be used to create new instances of
+     * schema derived classes for package: mx.com.msc.servicios.ws
+     *
      */
     public ObjectFactory() {
     }
 
     /**
      * Create an instance of {@link GeneraReporte }
-     * 
+     *
      */
     public GeneraReporte createGeneraReporte() {
         return new GeneraReporte();
@@ -44,7 +46,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link GeneraReporte.Parametros }
-     * 
+     *
      */
     public GeneraReporte.Parametros createGeneraReporteParametros() {
         return new GeneraReporte.Parametros();
@@ -52,7 +54,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link GeneraReporteResponse }
-     * 
+     *
      */
     public GeneraReporteResponse createGeneraReporteResponse() {
         return new GeneraReporteResponse();
@@ -60,15 +62,16 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link GeneraReporte.Parametros.Entry }
-     * 
+     *
      */
     public GeneraReporte.Parametros.Entry createGeneraReporteParametrosEntry() {
         return new GeneraReporte.Parametros.Entry();
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link GeneraReporteResponse }{@code >}}
-     * 
+     * Create an instance of
+     * {@link JAXBElement }{@code <}{@link GeneraReporteResponse }{@code >}}
+     *
      */
     @XmlElementDecl(namespace = "http://servicios.msc.mx.com/", name = "generaReporteResponse")
     public JAXBElement<GeneraReporteResponse> createGeneraReporteResponse(GeneraReporteResponse value) {
@@ -76,12 +79,49 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link GeneraReporte }{@code >}}
-     * 
+     * Create an instance of
+     * {@link JAXBElement }{@code <}{@link GeneraReporte }{@code >}}
+     *
      */
     @XmlElementDecl(namespace = "http://servicios.msc.mx.com/", name = "generaReporte")
     public JAXBElement<GeneraReporte> createGeneraReporte(GeneraReporte value) {
         return new JAXBElement<GeneraReporte>(_GeneraReporte_QNAME, GeneraReporte.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link EnviaCorreo }
+     *
+     */
+    public EnviaCorreo createEnviaCorreo() {
+        return new EnviaCorreo();
+    }
+
+    /**
+     * Create an instance of {@link EnviaCorreoResponse }
+     *
+     */
+    public EnviaCorreoResponse createEnviaCorreoResponse() {
+        return new EnviaCorreoResponse();
+    }
+
+    /**
+     * Create an instance of
+     * {@link JAXBElement }{@code <}{@link EnviaCorreo }{@code >}}
+     *
+     */
+    @XmlElementDecl(namespace = "http://servicios.msc.mx.com/", name = "enviaCorreo")
+    public JAXBElement<EnviaCorreo> createEnviaCorreo(EnviaCorreo value) {
+        return new JAXBElement<EnviaCorreo>(_EnviaCorreo_QNAME, EnviaCorreo.class, null, value);
+    }
+
+    /**
+     * Create an instance of
+     * {@link JAXBElement }{@code <}{@link EnviaCorreoResponse }{@code >}}
+     *
+     */
+    @XmlElementDecl(namespace = "http://servicios.msc.mx.com/", name = "enviaCorreoResponse")
+    public JAXBElement<EnviaCorreoResponse> createEnviaCorreoResponse(EnviaCorreoResponse value) {
+        return new JAXBElement<EnviaCorreoResponse>(_EnviaCorreoResponse_QNAME, EnviaCorreoResponse.class, null, value);
     }
 
 }
