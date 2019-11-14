@@ -5,8 +5,8 @@
  */
 package mx.com.itesz.rest.utils;
 
+import com.google.gson.JsonObject;
 import java.text.SimpleDateFormat;
-import mx.com.itesz.rest.dto.Actos;
 import mx.com.msc.servicios.ws.EmailService;
 import mx.com.msc.servicios.ws.EmailService_Service;
 
@@ -16,7 +16,7 @@ import mx.com.msc.servicios.ws.EmailService_Service;
  */
 public class EmailUtils {
 
-    public boolean enviaCorreo(int opcion, Actos acto) {
+    public boolean enviaCorreo(int opcion, JsonObject datosJob, java.util.Date fechaPresentacion) {
         boolean success = false;
         String remitente = "",
                 destinatarios = "",
@@ -40,33 +40,33 @@ public class EmailUtils {
                 mensaje = mensaje.concat("cancelado el acto de titulación descrito a continuación:\n\n");
                 break;
         }
-        remitente = acto.getSolicitud().getAlumno().getUsuario().getEmail();
-        destinatarios = acto.getSolicitud().getAlumno().getUsuario().getEmail().concat(", ")
-                .concat(acto.getSolicitud().getAdministrativo().getUsuario().getEmail().concat(", "))
-                .concat(acto.getNoDocenteP().getUsuario().getEmail().concat(", "))
-                .concat(acto.getNoDocenteS().getUsuario().getEmail().concat(", "))
-                .concat(acto.getNoDocenteV().getUsuario().getEmail());
-        mensaje = this.construyeMensaje(mensaje, acto);
+        remitente = datosJob.get("emailAlumno").getAsString();
+        destinatarios = datosJob.get("emailAlumno").getAsString().concat(", ")
+                .concat(datosJob.get("emailAdministrativo").getAsString().concat(", "))
+                .concat(datosJob.get("emailDocenteP").getAsString().concat(", "))
+                .concat(datosJob.get("emailDocenteS").getAsString().concat(", "))
+                .concat(datosJob.get("emailDocenteV").getAsString());
+        mensaje = this.construyeMensaje(mensaje, datosJob, fechaPresentacion);
         success = this.enviaCorreo(remitente, destinatarios, asunto, mensaje);
         return success;
     }
-
-    private String construyeMensaje(String mensaje, Actos acto) {
+//
+    private String construyeMensaje(String mensaje, JsonObject datosJob, java.util.Date fechaPresentacion) {
         SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy");
-        mensaje = mensaje.concat("Nombre de proyecto: ").concat(acto.getSolicitud().getNombreProyecto()).concat("\n");
-        mensaje = mensaje.concat("Fecha de presentación: ").concat(sdf.format(acto.getFechaPresentacion())).concat("\n");
-        mensaje = mensaje.concat("Hora de inicio: " + acto.getHoraInicio()).concat(" hrs.\n");
-        mensaje = mensaje.concat("Hora de inicio: " + acto.getHoraFin()).concat(" hrs.\n\n");
+        mensaje = mensaje.concat("Nombre de proyecto: ").concat(datosJob.get("nombreProyecto").getAsString()).concat("\n");
+        mensaje = mensaje.concat("Fecha de presentación: ").concat(sdf.format(fechaPresentacion)).concat("\n");
+        mensaje = mensaje.concat("Hora de inicio: " + datosJob.get("horaInicio").getAsString()).concat(" hrs.\n");
+        mensaje = mensaje.concat("Hora de inicio: " + datosJob.get("horaFin").getAsString()).concat(" hrs.\n\n");
         mensaje = mensaje.concat("DATOS DEL ALUMNO\n");
-        mensaje = mensaje.concat("No. control: ").concat(String.valueOf(acto.getSolicitud().getAlumno().getNoControl())).concat("\n");
-        mensaje = mensaje.concat("Nombre: ").concat(acto.getSolicitud().getAlumno().getUsuario().getNombre()).concat("\n\n");
+        mensaje = mensaje.concat("No. control: ").concat(String.valueOf(datosJob.get("noControl").getAsString())).concat("\n");
+        mensaje = mensaje.concat("Nombre: ").concat(datosJob.get("nombreAlumno").getAsString()).concat("\n\n");
         mensaje = mensaje.concat("DATOS DEL CÓMITE\n");
-        mensaje = mensaje.concat("Presidente: ").concat(String.valueOf(acto.getNoDocenteP().getNoDocente()).concat(" - ")
-                .concat(acto.getNoDocenteP().getUsuario().getNombre())).concat("\n");
-        mensaje = mensaje.concat("Secretario: ").concat(String.valueOf(acto.getNoDocenteS().getNoDocente()).concat(" - ")
-                .concat(acto.getNoDocenteS().getUsuario().getNombre())).concat("\n");
-        mensaje = mensaje.concat("Vocal: ").concat(String.valueOf(acto.getNoDocenteV().getNoDocente()).concat(" - ")
-                .concat(acto.getNoDocenteV().getUsuario().getNombre())).concat("\n");
+        mensaje = mensaje.concat("Presidente: ").concat(datosJob.get("noDocenteP").getAsString().concat(" - ")
+                .concat(datosJob.get("nombreDocenteP").getAsString())).concat("\n");
+        mensaje = mensaje.concat("Secretario: ").concat(datosJob.get("noDocenteS").getAsString().concat(" - ")
+                .concat(datosJob.get("nombreDocenteS").getAsString())).concat("\n");
+        mensaje = mensaje.concat("Vocal: ").concat(datosJob.get("noDocenteV").getAsString().concat(" - ")
+                .concat(datosJob.get("nombreDocenteV").getAsString())).concat("\n");
         return mensaje;
     }
 

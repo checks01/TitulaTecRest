@@ -9,8 +9,6 @@ import com.google.gson.Gson;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.UriInfo;
 import mx.com.itesz.rest.dao.SolicitudesDao;
 
 /**
@@ -23,9 +21,6 @@ public class SolicitudesService {
     private Gson gson;
     private SolicitudesDao solicitudesDao;
 
-    @Context
-    private UriInfo context;
-
     public SolicitudesService() {
         gson = new Gson();
         solicitudesDao = new SolicitudesDao();
@@ -35,6 +30,6 @@ public class SolicitudesService {
     @Produces(javax.ws.rs.core.MediaType.APPLICATION_JSON)
     @Path("/solicitudesAprobadas")
     public String solicitudesAprobadas() throws Exception {
-        return gson.toJson(solicitudesDao.getSolicitudesAprobadas());
+        return solicitudesDao.getSolicitudesAprobadas();
     }
 }

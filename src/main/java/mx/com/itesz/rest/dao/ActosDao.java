@@ -8,18 +8,13 @@ package mx.com.itesz.rest.dao;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.Time;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import mx.com.itesz.rest.dto.Actos;
-import mx.com.itesz.rest.dto.Docentes;
-import mx.com.itesz.rest.dto.Salas;
-import mx.com.itesz.rest.dto.Solicitudes;
-import mx.com.itesz.rest.dto.Usuarios;
+import java.util.List;
 import mx.com.itesz.rest.utils.Conexion;
 import mx.com.itesz.rest.utils.EmailUtils;
+import mx.com.itesz.rest.utils.FormUtil;
 
 /**
  *
@@ -27,10 +22,26 @@ import mx.com.itesz.rest.utils.EmailUtils;
  */
 public class ActosDao {
 
-    public ArrayList<Actos> getActos(int idSolicitud) throws Exception {
-        ArrayList<Actos> lista = new ArrayList<>();
+    public String getActos(int idSolicitud) throws Exception {
+        List<Object[]> lista = new ArrayList<>();
+        String jsonData = "",
+                mapping[] = new String[]{
+                    "idActo",
+                    "idSolicitud",
+                    "idSala",
+                    "noDocenteP",
+                    "emailP",
+                    "noDocenteS",
+                    "emailS",
+                    "noDocenteV",
+                    "emailV",
+                    "fechaPresentacion",
+                    "horaInicio",
+                    "horaFin",
+                    "dictamen",
+                    "estatus"
+                };
         PreparedStatement ps = null;
-        ResultSet rs = null;
         try {
             StringBuilder query = new StringBuilder();
             query.append("SELECT A.id_acto, ");
@@ -68,58 +79,18 @@ public class ActosDao {
             if (idSolicitud > 0) {
                 ps.setInt(1, idSolicitud);
             }
-            rs = ps.executeQuery();
-            while (rs.next()) {
-                Salas sala = new Salas();
-                sala.setIdSala(rs.getInt("id_sala"));
 
-                Solicitudes solicitud = new Solicitudes();
-                solicitud.setIdSolicitud(rs.getInt("id_solicitud"));
+            lista = FormUtil.executeQuery(ps);
+            jsonData = FormUtil.generaJsonString(true, "Proceso realizado correctamente", lista.size(), lista, mapping);
 
-                Docentes docenteP = new Docentes();
-                docenteP.setNoDocente(rs.getInt("no_docente_p"));
-                Usuarios usuarioP = new Usuarios();
-                usuarioP.setEmail(rs.getString("emailP"));
-                docenteP.setUsuario(usuarioP);
-
-                Docentes docenteS = new Docentes();
-                docenteS.setNoDocente(rs.getInt("no_docente_s"));
-                Usuarios usuarioS = new Usuarios();
-                usuarioS.setEmail(rs.getString("emailS"));
-                docenteS.setUsuario(usuarioS);
-
-                Docentes docenteV = new Docentes();
-                docenteV.setNoDocente(rs.getInt("no_docente_v"));
-                Usuarios usuarioV = new Usuarios();
-                usuarioV.setEmail(rs.getString("emailV"));
-                docenteV.setUsuario(usuarioV);
-
-                Actos ac = new Actos();
-                ac.setIdActo(rs.getInt("id_acto"));
-                ac.setSolicitud(solicitud);
-                ac.setSala(sala);
-                ac.setNoDocenteP(docenteP);
-                ac.setNoDocenteS(docenteS);
-                ac.setNoDocenteV(docenteV);
-                ac.setFechaPresentacion(rs.getDate("fecha_presentacion"));
-                ac.setHoraInicio(rs.getTime("hora_inicio"));
-                ac.setHoraFin(rs.getTime("hora_fin"));
-                ac.setDictamen(rs.getString("dictamen"));
-                ac.setEstatus(rs.getString("estatus"));
-
-                lista.add(ac);
-            }
         } catch (Exception ex) {
-            Logger.getLogger(SolicitudesDao.class.getName()).log(Level.SEVERE, null, ex);
+            System.err.println(ex.getMessage());
         } finally {
-            if (rs != null) {
-                rs.close();
-            }
             if (ps != null) {
                 ps.close();
             }
         }
-        return lista;
+        return jsonData;
     }
 
     public String insertaActo(Gson gson, JsonObject datosJob) throws Exception {
@@ -127,29 +98,30 @@ public class ActosDao {
         PreparedStatement ps = null;
         boolean insertaRegistro = false,
                 enviaCorreo = false;
-        Actos acto;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        java.util.Date fechaPresentacion;
         try {
-            acto = gson.fromJson(datosJob.get("acto"), Actos.class);
-
             ps = Conexion.getInstance().getCn().prepareStatement(insert);
-            ps.setInt(1, acto.getSolicitud().getIdSolicitud());
-            ps.setInt(2, acto.getSala().getIdSala());
-            ps.setInt(3, acto.getNoDocenteP().getNoDocente());
-            ps.setInt(4, acto.getNoDocenteS().getNoDocente());
-            ps.setInt(5, acto.getNoDocenteV().getNoDocente());
-            ps.setDate(6, new java.sql.Date(acto.getFechaPresentacion().getTime()));
-            ps.setTime(7, new Time(acto.getHoraInicio().getTime()));
-            ps.setTime(8, new Time(acto.getHoraFin().getTime()));
-            ps.setString(9, acto.getDictamen());
-            ps.setString(10, acto.getEstatus());
+            ps.setInt(1, Integer.parseInt(datosJob.get("idSolicitud").getAsString()));
+            ps.setInt(2, Integer.parseInt(datosJob.get("idSala").getAsString()));
+            ps.setInt(3, Integer.parseInt(datosJob.get("noDocenteP").getAsString()));
+            ps.setInt(4, Integer.parseInt(datosJob.get("noDocenteS").getAsString()));
+            ps.setInt(5, Integer.parseInt(datosJob.get("noDocenteV").getAsString()));
+
+            fechaPresentacion = sdf.parse(datosJob.get("fechaPresentacion").getAsString());
+
+            ps.setDate(6, new java.sql.Date(fechaPresentacion.getTime()));
+            ps.setTime(7, Time.valueOf(datosJob.get("horaInicio").getAsString()));
+            ps.setTime(8, Time.valueOf(datosJob.get("horaFin").getAsString()));
+            ps.setString(9, datosJob.get("dictamen").getAsString());
+            ps.setString(10, datosJob.get("estatus").getAsString());
 
             if (ps.executeUpdate() > 0) {
                 insertaRegistro = true;
-                enviaCorreo = new EmailUtils().enviaCorreo(1, acto);
+                enviaCorreo = new EmailUtils().enviaCorreo(1, datosJob, fechaPresentacion);
             }
-
         } catch (Exception ex) {
-            Logger.getLogger(ActosDao.class.getName()).log(Level.SEVERE, null, ex);
+            System.err.println(ex.getMessage());
         }
         return "{insertaRegistro: " + insertaRegistro + ", enviaCorreo: " + enviaCorreo + "}";
     }
@@ -159,21 +131,24 @@ public class ActosDao {
         PreparedStatement ps = null;
         boolean actualizaRegistro = false,
                 enviaCorreo = false;
-        Actos acto;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        java.util.Date fechaPresentacion;
         try {
-            acto = gson.fromJson(datosJob.get("acto"), Actos.class);
 
             ps = Conexion.getInstance().getCn().prepareStatement(update);
-            ps.setInt(1, acto.getSala().getIdSala());
-            ps.setInt(2, acto.getNoDocenteP().getNoDocente());
-            ps.setInt(3, acto.getNoDocenteS().getNoDocente());
-            ps.setInt(4, acto.getNoDocenteV().getNoDocente());
-            ps.setDate(5, new java.sql.Date(acto.getFechaPresentacion().getTime()));
-            ps.setTime(6, new Time(acto.getHoraInicio().getTime()));
-            ps.setTime(7, new Time(acto.getHoraFin().getTime()));
-            ps.setString(8, acto.getDictamen());
-            ps.setString(9, acto.getEstatus());
-            ps.setInt(10, acto.getIdActo());
+            ps.setInt(1, Integer.parseInt(datosJob.get("idSala").getAsString()));
+            ps.setInt(2, Integer.parseInt(datosJob.get("noDocenteP").getAsString()));
+            ps.setInt(3, Integer.parseInt(datosJob.get("noDocenteS").getAsString()));
+            ps.setInt(4, Integer.parseInt(datosJob.get("noDocenteV").getAsString()));
+            
+            fechaPresentacion = sdf.parse(datosJob.get("fechaPresentacion").getAsString());
+            
+            ps.setDate(5, new java.sql.Date(fechaPresentacion.getTime()));
+            ps.setTime(6, Time.valueOf(datosJob.get("horaInicio").getAsString()));
+            ps.setTime(7, Time.valueOf(datosJob.get("horaFin").getAsString()));
+            ps.setString(8, datosJob.get("dictamen").getAsString());
+            ps.setString(9, datosJob.get("estatus").getAsString());
+            ps.setInt(10, Integer.parseInt(datosJob.get("idActo").getAsString()));
 
             if (ps.executeUpdate() > 0) {
                 /*
@@ -183,12 +158,11 @@ public class ActosDao {
                         C - cancelado
                  */
                 actualizaRegistro = true;
-                int operacion = acto.getEstatus().equals("A") ? 2 : acto.getEstatus().equals("R") ? 3 : 4;
-                enviaCorreo = new EmailUtils().enviaCorreo(operacion, acto);
+                int operacion = datosJob.get("estatus").getAsString().equals("A") ? 2 : datosJob.get("estatus").getAsString().equals("R") ? 3 : 4;
+                enviaCorreo = new EmailUtils().enviaCorreo(operacion, datosJob, fechaPresentacion);
             }
-
         } catch (Exception ex) {
-            Logger.getLogger(ActosDao.class.getName()).log(Level.SEVERE, null, ex);
+            System.err.println(ex.getMessage());
         }
         return "{actualizaRegistro: " + actualizaRegistro + ", enviaCorreo: " + enviaCorreo + "}";
     }

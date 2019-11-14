@@ -5,19 +5,11 @@
  */
 package mx.com.itesz.rest.dao;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.PreparedStatement;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import mx.com.itesz.rest.dto.Administrativos;
-import mx.com.itesz.rest.dto.Alumnos;
-import mx.com.itesz.rest.dto.Carreras;
-import mx.com.itesz.rest.dto.Opciones;
-import mx.com.itesz.rest.dto.Solicitudes;
-import mx.com.itesz.rest.dto.Usuarios;
+import java.util.List;
 import mx.com.itesz.rest.utils.Conexion;
+import mx.com.itesz.rest.utils.FormUtil;
 
 /**
  *
@@ -25,10 +17,28 @@ import mx.com.itesz.rest.utils.Conexion;
  */
 public class SolicitudesDao {
 
-    public ArrayList<Solicitudes> getSolicitudesAprobadas() throws Exception {
-        ArrayList<Solicitudes> lista = new ArrayList<>();
-        Statement st = null;
-        ResultSet rs = null;
+    public String getSolicitudesAprobadas() throws Exception {
+        List<Object[]> lista = new ArrayList<>();
+        String jsonData = "",
+                mapping[] = new String[]{
+                    "idSolicitud",
+                    "idOpcion",
+                    "cveOpcion",
+                    "descripcion",
+                    "fechaElaboracion",
+                    "nombreProyecto",
+                    "noControl",
+                    "idUsuarioAlumno",
+                    "nombreAlumno",
+                    "idCarrera",
+                    "siglas",
+                    "carrera",
+                    "noEmpleado",
+                    "idusuarioAdministrativo",
+                    "nombreAdministrativo",
+                    "nombrePuesto",
+                    "nombreDepartamento",};
+        PreparedStatement ps = null;
         try {
             StringBuilder query = new StringBuilder();
             query.append("SELECT S.id_solicitud, ");
@@ -67,57 +77,17 @@ public class SolicitudesDao {
             query.append("       AND AD.idusuario = UAD.idusuario ");
             query.append("       AND S.estatus = 'A'");
 
-            st = Conexion.getInstance().getCn().createStatement();
-            rs = st.executeQuery(query.toString());
-            while (rs.next()) {
-                Opciones op = new Opciones();
-                op.setIdOpcion(rs.getInt("id_opcion"));
-                op.setCveOpcion(rs.getString("cve_opcion"));
-                op.setDescripcion(rs.getString("descripcion"));
-
-                Usuarios usAl = new Usuarios();
-                usAl.setIdUsuario(rs.getInt("ID_USUARIO_AL"));
-                usAl.setNombre(rs.getString("NOMBRE_AL"));
-
-                Carreras car = new Carreras();
-                car.setIdCarrera(rs.getInt("idcarrera"));
-                car.setSiglas(rs.getString("siglas"));
-                car.setNombre(rs.getString("CARRERA"));
-
-                Alumnos al = new Alumnos();
-                al.setNoControl(rs.getInt("nocontrol"));
-                al.setUsuario(usAl);
-                al.setCarrera(car);
-
-                Usuarios usAdm = new Usuarios();
-                usAdm.setIdUsuario(rs.getInt("ID_USUARIO_AD"));
-                usAdm.setNombre(rs.getString("NOMBRE_AD"));
-
-                Administrativos adm = new Administrativos();
-                adm.setNoEmpleado(rs.getInt("noempleado"));
-                adm.setUsuario(usAdm);
-
-                Solicitudes sol = new Solicitudes();
-                sol.setIdSolicitud(rs.getInt("id_solicitud"));
-                sol.setAlumno(al);
-                sol.setAdministrativo(adm);
-                sol.setOpcion(op);
-                sol.setFechaElaboracion(rs.getDate("fecha_elaboracion"));
-                sol.setNombreProyecto(rs.getString("nombre_proyecto"));
-
-                lista.add(sol);
-            }
+            ps = Conexion.getInstance().getCn().prepareStatement(query.toString());
+            lista = FormUtil.executeQuery(ps);
+            jsonData = FormUtil.generaJsonString(true, "Proceso realizado correctamente", lista.size(), lista, mapping);
 
         } catch (Exception ex) {
-            Logger.getLogger(SolicitudesDao.class.getName()).log(Level.SEVERE, null, ex);
+            System.err.println(ex.getMessage());
         } finally {
-            if (rs != null) {
-                rs.close();
-            }
-            if (st != null) {
-                st.close();
+            if (ps != null) {
+                ps.close();
             }
         }
-        return lista;
+        return jsonData;
     }
 }

@@ -30,6 +30,6 @@ public class DocentesService {
     @Produces(javax.ws.rs.core.MediaType.APPLICATION_JSON)
     @Path("/consultaDocentesActivos")
     public String consultaDocentesActivos() throws Exception {
-        return gson.toJson(docentesDao.getDocentesActivos());
+        return docentesDao.getDocentesActivos();
     }
 }

@@ -5,15 +5,13 @@
  */
 package mx.com.itesz.rest.dao;
 
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.PreparedStatement;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import mx.com.itesz.rest.dto.Carreras;
-import mx.com.itesz.rest.dto.Docentes;
-import mx.com.itesz.rest.dto.Usuarios;
 import mx.com.itesz.rest.utils.Conexion;
+import mx.com.itesz.rest.utils.FormUtil;
 
 /**
  *
@@ -21,10 +19,21 @@ import mx.com.itesz.rest.utils.Conexion;
  */
 public class DocentesDao {
 
-    public ArrayList<Docentes> getDocentesActivos() throws Exception {
-        ArrayList<Docentes> lista = new ArrayList<>();
-        Statement st = null;
-        ResultSet rs = null;
+    public String getDocentesActivos() throws Exception {
+        List<Object[]> lista = new ArrayList<>();
+        String jsonData = "",
+                mapping[] = new String[]{
+                    "noDocente",
+                    "idCarrera",
+                    "siglas",
+                    "carrera",
+                    "idUsuario",
+                    "email",
+                    "nombre",
+                    "escolaridad",
+                    "cedula"
+                };
+        PreparedStatement ps = null;
         try {
             StringBuilder query = new StringBuilder();
             query.append("SELECT D.nodocente, ");
@@ -43,40 +52,17 @@ public class DocentesDao {
             query.append("WHERE  D.idcarrera = CAR.idcarrera ");
             query.append("       AND D.idusuario = US.idusuario ");
             query.append("       AND D.estatus = 'A'");
-
-            st = Conexion.getInstance().getCn().createStatement();
-            rs = st.executeQuery(query.toString());
-            while (rs.next()) {
-                Carreras carrera = new Carreras();
-                carrera.setIdCarrera(rs.getInt("idcarrera"));
-                carrera.setSiglas(rs.getString("siglas"));
-                carrera.setNombre(rs.getString("carrera"));
-                
-                Usuarios usuario = new Usuarios();
-                usuario.setIdUsuario(rs.getInt("idusuario"));
-                usuario.setEmail(rs.getString("email"));
-                usuario.setNombre(rs.getString("nombre"));
-                
-                Docentes docentes = new Docentes();
-                docentes.setNoDocente(rs.getInt("nodocente"));
-                docentes.setCarrera(carrera);
-                docentes.setUsuario(usuario);
-                docentes.setEscolaridad(rs.getString("escolaridad"));
-                docentes.setEspecialidad(rs.getString("especialidad"));
-                docentes.setCedula(rs.getString("cedula"));
-                
-                lista.add(docentes);
-            }
+            
+            ps = Conexion.getInstance().getCn().prepareStatement(query.toString());
+            lista = FormUtil.executeQuery(ps);
+            jsonData = FormUtil.generaJsonString(true, "Proceso realizado correctamente", lista.size(), lista, mapping);
         } catch (Exception ex) {
             Logger.getLogger(SolicitudesDao.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
-            if (rs != null) {
-                rs.close();
-            }
-            if (st != null) {
-                st.close();
+            if (ps != null) {
+                ps.close();
             }
         }
-        return lista;
+        return jsonData;
     }
 }
