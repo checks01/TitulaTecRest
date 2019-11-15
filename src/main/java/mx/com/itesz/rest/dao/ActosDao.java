@@ -28,7 +28,10 @@ public class ActosDao {
                 mapping[] = new String[]{
                     "idActo",
                     "idSolicitud",
+                    "alumno",
+                    "opcionTitulacion",
                     "idSala",
+                    "sala",
                     "noDocenteP",
                     "emailP",
                     "noDocenteS",
@@ -46,7 +49,10 @@ public class ActosDao {
             StringBuilder query = new StringBuilder();
             query.append("SELECT A.id_acto, ");
             query.append("       A.id_solicitud, ");
+            query.append("       CONCAT(AL.nocontrol, ' - ', ua.nombre) as alumno, ");
+            query.append("       OP.descripcion as opcionTitulacion, ");
             query.append("       A.id_sala, ");
+            query.append("       CONCAT(SAL.cve_sala, ' - ', SAL.descripcion) as sala, ");
             query.append("       A.no_docente_p, ");
             query.append("       usP.email as emailP, ");
             query.append("       A.no_docente_s, ");
@@ -59,13 +65,23 @@ public class ActosDao {
             query.append("       A.dictamen, ");
             query.append("       A.estatus ");
             query.append("FROM   actos A,  ");
+            query.append("salas sal,  ");
+            query.append("solicitudes s,  ");
+            query.append("opciones op,  ");
+            query.append("alumnos al,  ");
+            query.append("usuarios ua,  ");
             query.append("docentes docP,  ");
             query.append("docentes docS,  ");
             query.append("docentes docV,  ");
             query.append("usuarios usP,  ");
             query.append("usuarios usS,  ");
             query.append("usuarios usV  ");
-            query.append("WHERE A.no_docente_p = docP.nodocente ");
+            query.append("WHERE A.id_solicitud = s.id_solicitud ");
+            query.append("and A.id_sala = sal.id_sala ");
+            query.append("and s.id_opcion = op.id_opcion ");
+            query.append("and s.nocontrol = al.nocontrol ");
+            query.append("and al.idusuario = ua.idusuario ");
+            query.append("and A.no_docente_p = docP.nodocente ");
             query.append("and docP.idusuario = usP.idUsuario ");
             query.append("and A.no_docente_s = docS.nodocente ");
             query.append("and docS.idusuario = usS.idusuario ");
