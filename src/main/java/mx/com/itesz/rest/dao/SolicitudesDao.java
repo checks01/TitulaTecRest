@@ -37,7 +37,7 @@ public class SolicitudesDao {
                     "idusuarioAdministrativo",
                     "nombreAdministrativo",
                     "nombrePuesto",
-                    "nombreDepartamento",};
+                    "nombreDepartamento"};
         PreparedStatement ps = null;
         try {
             StringBuilder query = new StringBuilder();
