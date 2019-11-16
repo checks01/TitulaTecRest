@@ -30,12 +30,14 @@ public class SolicitudesDao {
                     "noControl",
                     "idUsuarioAlumno",
                     "nombreAlumno",
+                    "emailAlumno",
                     "idCarrera",
                     "siglas",
                     "carrera",
                     "noEmpleado",
                     "idusuarioAdministrativo",
                     "nombreAdministrativo",
+                    "emailAdministrativo",
                     "nombrePuesto",
                     "nombreDepartamento"};
         PreparedStatement ps = null;
@@ -50,12 +52,14 @@ public class SolicitudesDao {
             query.append("       AL.nocontrol, ");
             query.append("       UAL.IDUSUARIO AS ID_USUARIO_AL, ");
             query.append("       UAL.nombre AS NOMBRE_AL, ");
+            query.append("       UAL.email as email_alumno, ");
             query.append("       CAR.idcarrera, ");
             query.append("       CAR.siglas, ");
             query.append("       CAR.nombre as CARRERA, ");
             query.append("       AD.noempleado, ");
             query.append("       UAD.IDUSUARIO AS ID_USUARIO_AD, ");
             query.append("       UAD.nombre AS NOMBRE_AD, ");
+            query.append("       UAD.email as email_administrativo, ");
             query.append("       PU.nombre  AS NOMBRE_PUESTO, ");
             query.append("       DEP.nombre AS NOMBRE_DEPARTAMENTO ");
             query.append("FROM   solicitudes S, ");

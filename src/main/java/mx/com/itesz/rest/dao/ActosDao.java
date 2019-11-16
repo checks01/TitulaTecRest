@@ -29,19 +29,25 @@ public class ActosDao {
                     "idActo",
                     "idSolicitud",
                     "alumno",
+                    "nombreProyecto",
                     "opcionTitulacion",
                     "idSala",
+                    "cveSala",
                     "sala",
                     "noDocenteP",
+                    "nombreDocenteP",
                     "emailP",
                     "noDocenteS",
+                    "nombreDocenteS",
                     "emailS",
                     "noDocenteV",
+                    "nombreDocenteV",
                     "emailV",
                     "fechaPresentacion",
                     "horaInicio",
                     "horaFin",
                     "dictamen",
+                    "cveEstatus",
                     "estatus"
                 };
         PreparedStatement ps = null;
@@ -50,20 +56,27 @@ public class ActosDao {
             query.append("SELECT A.id_acto, ");
             query.append("       A.id_solicitud, ");
             query.append("       CONCAT(AL.nocontrol, ' - ', ua.nombre) as alumno, ");
+            query.append("       s.nombre_proyecto, ");
             query.append("       OP.descripcion as opcionTitulacion, ");
             query.append("       A.id_sala, ");
-            query.append("       CONCAT(SAL.cve_sala, ' - ', SAL.descripcion) as sala, ");
+            query.append("       SAL.cve_sala, ");
+            query.append("       SAL.descripcion as sala, ");
             query.append("       A.no_docente_p, ");
+            query.append("       usP.nombre as nombre_docente_p, ");
             query.append("       usP.email as emailP, ");
             query.append("       A.no_docente_s, ");
+            query.append("       usS.nombre as nombre_docente_s, ");
             query.append("       usS.email as emailS, ");
             query.append("       A.no_docente_v, ");
+            query.append("       usV.nombre as nombre_docente_v, ");
             query.append("       usV.email as emailV, ");
             query.append("       A.fecha_presentacion, ");
             query.append("       A.hora_inicio, ");
             query.append("       A.hora_fin, ");
             query.append("       A.dictamen, ");
-            query.append("       A.estatus ");
+            query.append("       A.estatus as cve_estatus, ");
+            query.append("       CASE WHEN A.estatus = 'P' THEN 'Pendiente' WHEN A.estatus = 'A' THEN 'Aprobado' ");
+            query.append("       WHEN A.estatus = 'R' THEN 'Realizado' WHEN A.estatus = 'C' THEN 'Cancelado' END AS estatus ");
             query.append("FROM   actos A,  ");
             query.append("salas sal,  ");
             query.append("solicitudes s,  ");

@@ -25,9 +25,6 @@ public class SalasDao {
         try {
             StringBuilder query = new StringBuilder();
             query.append("select s.id_sala, s.cve_sala, s.descripcion from salas s ");
-            query.append(" where s.id_sala not in ");
-            query.append(" (select a.id_sala from actos a group by a.id_sala)");
-           
 
             ps = Conexion.getInstance().getCn().prepareStatement(query.toString());
             lista = FormUtil.executeQuery(ps);
