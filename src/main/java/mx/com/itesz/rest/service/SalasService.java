@@ -32,8 +32,9 @@ public class SalasService {
     @Path("/consultaSalasDisponibles")
     public String consultaSalasDisponibles(
             @QueryParam(value = "fechaPresentacion") String fechaPresentacion,
-            @QueryParam(value = "horaInicio") String horaInicio) throws Exception {
-        return salasDao.getSalasDisponibles(fechaPresentacion, horaInicio);
+            @QueryParam(value = "horaInicio") String horaInicio,
+            @QueryParam(value = "horaFin") String horaFin) throws Exception {
+        return salasDao.getSalasDisponibles(fechaPresentacion, horaInicio, horaFin);
     }
 
 }
