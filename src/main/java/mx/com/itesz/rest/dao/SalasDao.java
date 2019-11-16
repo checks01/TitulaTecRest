@@ -17,16 +17,22 @@ import mx.com.itesz.rest.utils.FormUtil;
  */
 public class SalasDao {
 
-    public String getSalasDisponibles() throws Exception {
+    public String getSalasDisponibles(String fechaPresentacion, String horaInicio) throws Exception {
         List<Object[]> lista = new ArrayList<>();
         String jsonData = "",
                 mapping[] = new String[]{"idSala", "cveSala", "descripcion"};
         PreparedStatement ps = null;
         try {
             StringBuilder query = new StringBuilder();
-            query.append("select s.id_sala, s.cve_sala, s.descripcion from salas s ");
+            query.append("SELECT * FROM SALAS ");
+            query.append("WHERE ID_SALA NOT IN( ");
+            query.append("SELECT id_sala FROM ACTOS ");
+            query.append("WHERE fecha_presentacion =  str_to_date(?, '%Y-%m-%d') ");
+            query.append("and str_to_date(?, '%H:%i:%s') between hora_inicio and hora_fin) ");
 
             ps = Conexion.getInstance().getCn().prepareStatement(query.toString());
+            ps.setString(1, fechaPresentacion);
+            ps.setString(2, horaInicio);
             lista = FormUtil.executeQuery(ps);
             jsonData = FormUtil.generaJsonString(true, "Proceso realizado correctamente", lista.size(), lista, mapping);
 

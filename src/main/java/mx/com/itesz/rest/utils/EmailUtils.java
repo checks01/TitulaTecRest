@@ -42,10 +42,10 @@ public class EmailUtils {
         }
         remitente = datosJob.get("emailAlumno").getAsString();
         destinatarios = datosJob.get("emailAlumno").getAsString().concat(", ")
-                .concat(datosJob.get("emailAdministrativo").getAsString().concat(", "))
-                .concat(datosJob.get("emailDocenteP").getAsString().concat(", "))
-                .concat(datosJob.get("emailDocenteS").getAsString().concat(", "))
-                .concat(datosJob.get("emailDocenteV").getAsString());
+                .concat(datosJob.get("emailAdministrativo").getAsString());
+//                .concat(datosJob.get("emailDocenteP").getAsString().concat(", "))
+//                .concat(datosJob.get("emailDocenteS").getAsString().concat(", "))
+//                .concat(datosJob.get("emailDocenteV").getAsString());
         mensaje = this.construyeMensaje(mensaje, datosJob, fechaPresentacion);
         success = this.enviaCorreo(remitente, destinatarios, asunto, mensaje);
         return success;
@@ -56,7 +56,7 @@ public class EmailUtils {
         mensaje = mensaje.concat("Nombre de proyecto: ").concat(datosJob.get("nombreProyecto").getAsString()).concat("\n");
         mensaje = mensaje.concat("Fecha de presentación: ").concat(sdf.format(fechaPresentacion)).concat("\n");
         mensaje = mensaje.concat("Hora de inicio: " + datosJob.get("horaInicio").getAsString()).concat(" hrs.\n");
-        mensaje = mensaje.concat("Hora de inicio: " + datosJob.get("horaFin").getAsString()).concat(" hrs.\n\n");
+        mensaje = mensaje.concat("Hora de término: " + datosJob.get("horaFin").getAsString()).concat(" hrs.\n\n");
         mensaje = mensaje.concat("DATOS DEL ALUMNO\n");
         mensaje = mensaje.concat("No. control: ").concat(String.valueOf(datosJob.get("noControl").getAsString())).concat("\n");
         mensaje = mensaje.concat("Nombre: ").concat(datosJob.get("nombreAlumno").getAsString()).concat("\n\n");

@@ -9,6 +9,7 @@ import com.google.gson.Gson;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import mx.com.itesz.rest.dao.SalasDao;
 
 /**
@@ -17,19 +18,22 @@ import mx.com.itesz.rest.dao.SalasDao;
  */
 @Path("/salas")
 public class SalasService {
+
     private Gson gson;
     private SalasDao salasDao;
-    
+
     public SalasService() {
         gson = new Gson();
         salasDao = new SalasDao();
     }
-    
-     @GET
+
+    @GET
     @Produces(javax.ws.rs.core.MediaType.APPLICATION_JSON)
     @Path("/consultaSalasDisponibles")
-    public String consultaSalasDisponibles() throws Exception {
-        return salasDao.getSalasDisponibles();
+    public String consultaSalasDisponibles(
+            @QueryParam(value = "fechaPresentacion") String fechaPresentacion,
+            @QueryParam(value = "horaInicio") String horaInicio) throws Exception {
+        return salasDao.getSalasDisponibles(fechaPresentacion, horaInicio);
     }
 
 }
