@@ -3,20 +3,62 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package mx.com.itesz.rest.utils;
+package mx.com.itesz.rest.facade.impl;
 
 import com.google.gson.JsonObject;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import mx.com.msc.servicios.ws.EmailService;
 import mx.com.msc.servicios.ws.EmailService_Service;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import net.sf.json.JsonConfig;
+import net.sf.json.util.CycleDetectionStrategy;
+import mx.com.itesz.rest.facade.IFacade;
+import mx.com.itesz.rest.facade.utils.FacadeUtils;
 
 /**
  *
  * @author sergiov
  */
-public class EmailUtils {
+public class FacadeUtilsImpl implements IFacade {
 
-    public boolean enviaCorreo(int opcion, JsonObject datosJob, java.util.Date fechaPresentacion) {
+    private JSONArray registros;
+    private JsonConfig config;
+    private boolean success;
+    private String mensaje;
+
+    public FacadeUtilsImpl() {
+        registros = new JSONArray();
+        config = new JsonConfig();
+        success = true;
+        mensaje = "Proceso realizado correctamente";
+    }
+
+    @Override
+    public String[] getHeadersConsulta(String metodo) {
+        return new FacadeUtils().getHeaders(metodo);
+    }
+
+    @Override
+    public String generaJsonString(PreparedStatement ps, String metodo) {
+        String jsonData = "";
+        try {
+            this.setJsonConfig();
+            jsonData = this.construyeJson(ps, registros, metodo);
+
+        } catch (Exception ex) {
+            System.err.println(ex.getMessage());
+        }
+        return jsonData;
+    }
+
+    @Override
+    public boolean enviaCorreo(int opcion, JsonObject datosJob,
+            java.util.Date fechaPresentacion
+    ) {
         boolean success = false;
         String remitente = "",
                 destinatarios = "",
@@ -42,15 +84,15 @@ public class EmailUtils {
         }
         remitente = datosJob.get("emailAlumno").getAsString();
         destinatarios = datosJob.get("emailAlumno").getAsString().concat(", ")
-                .concat(datosJob.get("emailAdministrativo").getAsString());
-//                .concat(datosJob.get("emailDocenteP").getAsString().concat(", "))
-//                .concat(datosJob.get("emailDocenteS").getAsString().concat(", "))
-//                .concat(datosJob.get("emailDocenteV").getAsString());
+                .concat(datosJob.get("emailAdministrativo").getAsString().concat(", "))
+                .concat(datosJob.get("emailDocenteP").getAsString().concat(", "))
+                .concat(datosJob.get("emailDocenteS").getAsString().concat(", "))
+                .concat(datosJob.get("emailDocenteV").getAsString());
         mensaje = this.construyeMensaje(mensaje, datosJob, fechaPresentacion);
         success = this.enviaCorreo(remitente, destinatarios, asunto, mensaje);
         return success;
     }
-//
+
     private String construyeMensaje(String mensaje, JsonObject datosJob, java.util.Date fechaPresentacion) {
         SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy");
         mensaje = mensaje.concat("Nombre de proyecto: ").concat(datosJob.get("nombreProyecto").getAsString()).concat("\n");
@@ -76,4 +118,50 @@ public class EmailUtils {
         return port.enviaCorreo(remitente, destinatarios, asunto, mensaje);
     }
 
+    private void setJsonConfig() {
+        config.setIgnoreDefaultExcludes(false);
+        config.setCycleDetectionStrategy(CycleDetectionStrategy.LENIENT);
+    }
+
+    private String construyeJson(PreparedStatement ps, JSONArray registros, String metodo) {
+        ResultSet rs;
+        JSONObject datosJob;
+        String jsonData = "",
+                headers[];
+        try {
+            rs = ps.executeQuery();
+            headers = this.getHeadersConsulta(metodo);
+
+            while (rs.next()) {
+                datosJob = new JSONObject();
+                Object[] record = new Object[headers.length];
+                for (int i = 0, idxColumn = 1; i < headers.length; i++, idxColumn++) {
+                    record[i] = rs.getObject(idxColumn);
+                    datosJob.put(headers[i], String.valueOf(record[i]));
+                }
+                registros.add(datosJob, config);
+            }
+        } catch (Exception ex) {
+            success = false;
+            mensaje = "Ocurrió un error durante el proceso: ".concat(ex.getMessage());
+            System.err.println(ex.getMessage());
+        } finally {
+            jsonData = this.construyeJson();
+        }
+        return jsonData;
+    }
+
+    private String construyeJson() {
+        JSONArray datosJar = new JSONArray();
+        HashMap<String, Object> jsonHsm = new HashMap<>();
+
+        jsonHsm.put("success", success);
+        jsonHsm.put("message", mensaje);
+        jsonHsm.put("total", registros.size());
+        jsonHsm.put("data", registros);
+
+        datosJar = new JSONArray();
+        datosJar.add(jsonHsm, config);
+        return datosJar.size() > 0 ? datosJar.getJSONObject(0).toString() : datosJar.toString();
+    }
 }

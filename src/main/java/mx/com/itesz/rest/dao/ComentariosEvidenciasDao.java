@@ -9,11 +9,9 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import java.sql.PreparedStatement;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
 import mx.com.itesz.rest.dto.ComentariosEvidencias;
+import mx.com.itesz.rest.facade.impl.FacadeUtilsImpl;
 import mx.com.itesz.rest.utils.Conexion;
-import mx.com.itesz.rest.utils.FormUtil;
 
 /**
  *
@@ -22,16 +20,14 @@ import mx.com.itesz.rest.utils.FormUtil;
 public class ComentariosEvidenciasDao {
 
     public String getComentariosEvidencias() throws Exception {
-        List<Object[]> lista = new ArrayList<>();
-        String jsonData = "",
-                mapping[] = new String[]{"idComentarioEvidencia", "idEvidencia", "fecha", "observaciones"};
+        String jsonData = "";
         PreparedStatement ps = null;
         try {
             StringBuilder query = new StringBuilder();
             query.append("SELECT * FROM COMENTARIOS_EVIDENCIAS ");
             ps = Conexion.getInstance().getCn().prepareStatement(query.toString());
-            lista = FormUtil.executeQuery(ps);
-            jsonData = FormUtil.generaJsonString(true, "Proceso realizado correctamente", lista.size(), lista, mapping);
+            
+            jsonData = new FacadeUtilsImpl().generaJsonString(ps, "getComentariosEvidencias");
 
         } catch (Exception ex) {
             System.err.println(ex.getMessage());

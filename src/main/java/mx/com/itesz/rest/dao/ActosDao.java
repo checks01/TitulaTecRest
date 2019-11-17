@@ -10,46 +10,17 @@ import com.google.gson.JsonObject;
 import java.sql.PreparedStatement;
 import java.sql.Time;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
+import mx.com.itesz.rest.facade.impl.FacadeUtilsImpl;
 import mx.com.itesz.rest.utils.Conexion;
-import mx.com.itesz.rest.utils.EmailUtils;
-import mx.com.itesz.rest.utils.FormUtil;
 
 /**
  *
  * @author sergiov
  */
 public class ActosDao {
-
+    
     public String getActos(int idSolicitud) throws Exception {
-        List<Object[]> lista = new ArrayList<>();
-        String jsonData = "",
-                mapping[] = new String[]{
-                    "idActo",
-                    "idSolicitud",
-                    "alumno",
-                    "nombreProyecto",
-                    "opcionTitulacion",
-                    "idSala",
-                    "cveSala",
-                    "sala",
-                    "noDocenteP",
-                    "nombreDocenteP",
-                    "emailP",
-                    "noDocenteS",
-                    "nombreDocenteS",
-                    "emailS",
-                    "noDocenteV",
-                    "nombreDocenteV",
-                    "emailV",
-                    "fechaPresentacion",
-                    "horaInicio",
-                    "horaFin",
-                    "dictamen",
-                    "cveEstatus",
-                    "estatus"
-                };
+        String jsonData = "";
         PreparedStatement ps = null;
         try {
             StringBuilder query = new StringBuilder();
@@ -100,7 +71,7 @@ public class ActosDao {
             query.append("and docS.idusuario = usS.idusuario ");
             query.append("and A.no_docente_v = docV.nodocente ");
             query.append("and docV.idusuario = usV.idusuario ");
-
+            
             if (idSolicitud > 0) {
                 query.append("AND A.id_solicitud = ? ");
             }
@@ -108,10 +79,9 @@ public class ActosDao {
             if (idSolicitud > 0) {
                 ps.setInt(1, idSolicitud);
             }
-
-            lista = FormUtil.executeQuery(ps);
-            jsonData = FormUtil.generaJsonString(true, "Proceso realizado correctamente", lista.size(), lista, mapping);
-
+            
+            jsonData = new FacadeUtilsImpl().generaJsonString(ps, "getActos");
+            
         } catch (Exception ex) {
             System.err.println(ex.getMessage());
         } finally {
@@ -121,7 +91,7 @@ public class ActosDao {
         }
         return jsonData;
     }
-
+    
     public String insertaActo(Gson gson, JsonObject datosJob) throws Exception {
         String insert = "INSERT INTO ACTOS(ID_SOLICITUD, ID_SALA, NO_DOCENTE_P, NO_DOCENTE_S, NO_DOCENTE_V, FECHA_PRESENTACION, HORA_INICIO, HORA_FIN, DICTAMEN, ESTATUS) VALUES(?,?,?,?,?,?,?,?,?,?)";
         PreparedStatement ps = null;
@@ -136,25 +106,25 @@ public class ActosDao {
             ps.setInt(3, Integer.parseInt(datosJob.get("noDocenteP").getAsString()));
             ps.setInt(4, Integer.parseInt(datosJob.get("noDocenteS").getAsString()));
             ps.setInt(5, Integer.parseInt(datosJob.get("noDocenteV").getAsString()));
-
+            
             fechaPresentacion = sdf.parse(datosJob.get("fechaPresentacion").getAsString());
-
+            
             ps.setDate(6, new java.sql.Date(fechaPresentacion.getTime()));
             ps.setTime(7, Time.valueOf(datosJob.get("horaInicio").getAsString()));
             ps.setTime(8, Time.valueOf(datosJob.get("horaFin").getAsString()));
             ps.setString(9, datosJob.get("dictamen").getAsString());
             ps.setString(10, datosJob.get("estatus").getAsString());
-
+            
             if (ps.executeUpdate() > 0) {
                 insertaRegistro = true;
-                enviaCorreo = new EmailUtils().enviaCorreo(1, datosJob, fechaPresentacion);
+                enviaCorreo = new FacadeUtilsImpl().enviaCorreo(1, datosJob, fechaPresentacion);
             }
         } catch (Exception ex) {
             System.err.println(ex.getMessage());
         }
         return "{insertaRegistro: " + insertaRegistro + ", enviaCorreo: " + enviaCorreo + "}";
     }
-
+    
     public String actualizaActo(Gson gson, JsonObject datosJob) throws Exception {
         String update = "UPDATE ACTOS SET ID_SALA = ?, NO_DOCENTE_P = ?, NO_DOCENTE_S = ?, NO_DOCENTE_V = ?, FECHA_PRESENTACION = ?, HORA_INICIO = ?, HORA_FIN = ?, DICTAMEN = ?, ESTATUS = ? WHERE ID_ACTO = ?";
         PreparedStatement ps = null;
@@ -163,22 +133,22 @@ public class ActosDao {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         java.util.Date fechaPresentacion;
         try {
-
+            
             ps = Conexion.getInstance().getCn().prepareStatement(update);
             ps.setInt(1, Integer.parseInt(datosJob.get("idSala").getAsString()));
             ps.setInt(2, Integer.parseInt(datosJob.get("noDocenteP").getAsString()));
             ps.setInt(3, Integer.parseInt(datosJob.get("noDocenteS").getAsString()));
             ps.setInt(4, Integer.parseInt(datosJob.get("noDocenteV").getAsString()));
-
+            
             fechaPresentacion = sdf.parse(datosJob.get("fechaPresentacion").getAsString());
-
+            
             ps.setDate(5, new java.sql.Date(fechaPresentacion.getTime()));
             ps.setTime(6, Time.valueOf(datosJob.get("horaInicio").getAsString()));
             ps.setTime(7, Time.valueOf(datosJob.get("horaFin").getAsString()));
             ps.setString(8, datosJob.get("dictamen").getAsString());
             ps.setString(9, datosJob.get("estatus").getAsString());
             ps.setInt(10, Integer.parseInt(datosJob.get("idActo").getAsString()));
-
+            
             if (ps.executeUpdate() > 0) {
                 /*
                         P - pendiente
@@ -188,7 +158,7 @@ public class ActosDao {
                  */
                 actualizaRegistro = true;
                 int operacion = datosJob.get("estatus").getAsString().equals("A") ? 2 : datosJob.get("estatus").getAsString().equals("R") ? 3 : 4;
-                enviaCorreo = new EmailUtils().enviaCorreo(operacion, datosJob, fechaPresentacion);
+                enviaCorreo = new FacadeUtilsImpl().enviaCorreo(operacion, datosJob, fechaPresentacion);
             }
         } catch (Exception ex) {
             System.err.println(ex.getMessage());

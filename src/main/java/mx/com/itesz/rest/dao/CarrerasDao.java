@@ -8,11 +8,9 @@ package mx.com.itesz.rest.dao;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import java.sql.PreparedStatement;
-import java.util.ArrayList;
-import java.util.List;
 import mx.com.itesz.rest.dto.Carreras;
+import mx.com.itesz.rest.facade.impl.FacadeUtilsImpl;
 import mx.com.itesz.rest.utils.Conexion;
-import mx.com.itesz.rest.utils.FormUtil;
 
 /**
  *
@@ -21,16 +19,14 @@ import mx.com.itesz.rest.utils.FormUtil;
 public class CarrerasDao {
 
     public String getCarreras() throws Exception {
-        List<Object[]> lista = new ArrayList<>();
-        String jsonData = "",
-                mapping[] = new String[]{"siglas", "siglas", "nombre", "estatus", "especialidad", "estatus", "noEmpleado"};
+        String jsonData = "";
         PreparedStatement ps = null;
         try {
             StringBuilder query = new StringBuilder();
             query.append("SELECT * FROM CARRERAS ");
             ps = Conexion.getInstance().getCn().prepareStatement(query.toString());
-            lista = FormUtil.executeQuery(ps);
-            jsonData = FormUtil.generaJsonString(true, "Proceso realizado correctamente", lista.size(), lista, mapping);
+            
+            jsonData = new FacadeUtilsImpl().generaJsonString(ps, "getCarreras");
 
         } catch (Exception ex) {
             System.err.println(ex.getMessage());

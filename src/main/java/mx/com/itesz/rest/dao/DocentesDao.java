@@ -8,13 +8,11 @@ package mx.com.itesz.rest.dao;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import java.sql.PreparedStatement;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import mx.com.itesz.rest.dto.Docentes;
+import mx.com.itesz.rest.facade.impl.FacadeUtilsImpl;
 import mx.com.itesz.rest.utils.Conexion;
-import mx.com.itesz.rest.utils.FormUtil;
 
 /**
  *
@@ -23,25 +21,13 @@ import mx.com.itesz.rest.utils.FormUtil;
 public class DocentesDao {
 
     public String getDocentesActivos() throws Exception {
-        List<Object[]> lista = new ArrayList<>();
-        String jsonData = "",
-                mapping[] = new String[]{
-                    "noDocente",
-                    "noDocente",
-                    "idCarrera",
-                    "carrera",
-                    "idUsuario",
-                    "email",
-                    "nombre",
-                    "escolaridad",
-                    "cedula"
-                };
+        String jsonData = "";
         PreparedStatement ps = null;
         try {
             StringBuilder query = new StringBuilder();
             query.append("SELECT D.nodocente, ");
             query.append("       CAR.idcarrera, ");
-            query.append("       CAR.idCarrera, ");
+            query.append("       CAR.siglas, ");
             query.append("       CAR.nombre AS CARRERA, ");
             query.append("       US.idusuario, ");
             query.append("       US.email, ");
@@ -57,8 +43,9 @@ public class DocentesDao {
             query.append("       AND D.estatus = 'A'");
 
             ps = Conexion.getInstance().getCn().prepareStatement(query.toString());
-            lista = FormUtil.executeQuery(ps);
-            jsonData = FormUtil.generaJsonString(true, "Proceso realizado correctamente", lista.size(), lista, mapping);
+            
+            jsonData = new FacadeUtilsImpl().generaJsonString(ps, "getDocentesActivos");
+            
         } catch (Exception ex) {
             Logger.getLogger(SolicitudesDao.class.getName()).log(Level.SEVERE, null, ex);
         } finally {

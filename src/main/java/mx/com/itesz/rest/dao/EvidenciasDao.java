@@ -9,11 +9,9 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import java.sql.Blob;
 import java.sql.PreparedStatement;
-import java.util.ArrayList;
-import java.util.List;
 import mx.com.itesz.rest.dto.Evidencias;
+import mx.com.itesz.rest.facade.impl.FacadeUtilsImpl;
 import mx.com.itesz.rest.utils.Conexion;
-import mx.com.itesz.rest.utils.FormUtil;
 
 /**
  *
@@ -22,17 +20,14 @@ import mx.com.itesz.rest.utils.FormUtil;
 public class EvidenciasDao {
 
     public String getEvidencias() throws Exception {
-        List<Object[]> lista = new ArrayList<>();
-        String jsonData = "",
-                mapping[] = new String[]{"idEvidencia", "idSolicitud", "nombre", "archivo", "extension", "estatus", "observaciones"};
+        String jsonData = "";
         PreparedStatement ps = null;
-        Evidencias evidencia;
         try {
             StringBuilder query = new StringBuilder();
             query.append("SELECT * FROM EVIDENCIAS ");
             ps = Conexion.getInstance().getCn().prepareStatement(query.toString());
-            lista = FormUtil.executeQuery(ps);
-            jsonData = FormUtil.generaJsonString(true, "Proceso realizado correctamente", lista.size(), lista, mapping);
+            
+            jsonData = new FacadeUtilsImpl().generaJsonString(ps, "getEvidencias");
 
         } catch (Exception ex) {
             System.err.println(ex.getMessage());
