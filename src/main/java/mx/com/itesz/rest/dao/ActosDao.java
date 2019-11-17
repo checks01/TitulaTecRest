@@ -169,9 +169,9 @@ public class ActosDao {
             ps.setInt(2, Integer.parseInt(datosJob.get("noDocenteP").getAsString()));
             ps.setInt(3, Integer.parseInt(datosJob.get("noDocenteS").getAsString()));
             ps.setInt(4, Integer.parseInt(datosJob.get("noDocenteV").getAsString()));
-            
+
             fechaPresentacion = sdf.parse(datosJob.get("fechaPresentacion").getAsString());
-            
+
             ps.setDate(5, new java.sql.Date(fechaPresentacion.getTime()));
             ps.setTime(6, Time.valueOf(datosJob.get("horaInicio").getAsString()));
             ps.setTime(7, Time.valueOf(datosJob.get("horaFin").getAsString()));

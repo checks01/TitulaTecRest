@@ -6,7 +6,12 @@
 package mx.com.itesz.rest.service;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import javax.jws.WebParam;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
@@ -35,6 +40,39 @@ public class SalasService {
             @QueryParam(value = "horaInicio") String horaInicio,
             @QueryParam(value = "horaFin") String horaFin) throws Exception {
         return salasDao.getSalasDisponibles(fechaPresentacion, horaInicio, horaFin);
+    }
+
+    @POST
+    @Produces(javax.ws.rs.core.MediaType.APPLICATION_JSON)
+    @Consumes(javax.ws.rs.core.MediaType.APPLICATION_JSON)
+    @Path("/insertaSala")
+    public String insertaSala(@WebParam(name = "data") String data) throws Exception {
+        String respuesta;
+        JsonObject datosJob = new JsonParser().parse(data).getAsJsonObject();
+        respuesta = salasDao.insertaSala(gson, datosJob);
+        return gson.toJson(new JsonParser().parse(respuesta).getAsJsonObject());
+    }
+
+    @POST
+    @Produces(javax.ws.rs.core.MediaType.APPLICATION_JSON)
+    @Consumes(javax.ws.rs.core.MediaType.APPLICATION_JSON)
+    @Path("/actualizaSala")
+    public String actualizaSala(@WebParam(name = "data") String data) throws Exception {
+        String respuesta;
+        JsonObject datosJob = new JsonParser().parse(data).getAsJsonObject();
+        respuesta = salasDao.actualizaSala(gson, datosJob);
+        return gson.toJson(new JsonParser().parse(respuesta).getAsJsonObject());
+    }
+
+    @POST
+    @Produces(javax.ws.rs.core.MediaType.APPLICATION_JSON)
+    @Consumes(javax.ws.rs.core.MediaType.APPLICATION_JSON)
+    @Path("/eliminaSala")
+    public String eliminaSala(@WebParam(name = "data") String data) throws Exception {
+        String respuesta;
+        JsonObject datosJob = new JsonParser().parse(data).getAsJsonObject();
+        respuesta = salasDao.eliminaSala(gson, datosJob);
+        return gson.toJson(new JsonParser().parse(respuesta).getAsJsonObject());
     }
 
 }

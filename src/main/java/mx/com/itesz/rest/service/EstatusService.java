@@ -14,60 +14,60 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import mx.com.itesz.rest.dao.SolicitudesDao;
+import mx.com.itesz.rest.dao.EstatusDao;
 
 /**
  *
  * @author sergiov
  */
-@Path("/solicitudes")
-public class SolicitudesService {
+@Path("/estatus")
+public class EstatusService {
 
     private Gson gson;
-    private SolicitudesDao solicitudesDao;
+    private EstatusDao estatusDao;
 
-    public SolicitudesService() {
+    public EstatusService() {
         gson = new Gson();
-        solicitudesDao = new SolicitudesDao();
+        estatusDao = new EstatusDao();
     }
 
     @GET
     @Produces(javax.ws.rs.core.MediaType.APPLICATION_JSON)
-    @Path("/solicitudesAprobadas")
-    public String solicitudesAprobadas() throws Exception {
-        return solicitudesDao.getSolicitudesAprobadas();
+    @Path("/consultaEstatus")
+    public String consultaEstatus() throws Exception {
+        return estatusDao.getEstatus();
     }
-    
+
     @POST
     @Produces(javax.ws.rs.core.MediaType.APPLICATION_JSON)
     @Consumes(javax.ws.rs.core.MediaType.APPLICATION_JSON)
-    @Path("/insertaSolicitud")
-    public String insertaSolicitud(@WebParam(name = "data") String data) throws Exception {
+    @Path("/insertaEstatus")
+    public String insertaEstatus(@WebParam(name = "data") String data) throws Exception {
         String respuesta;
         JsonObject datosJob = new JsonParser().parse(data).getAsJsonObject();
-        respuesta = solicitudesDao.insertaSolicitud(gson, datosJob);
+        respuesta = estatusDao.insertaEstatus(gson, datosJob);
         return gson.toJson(new JsonParser().parse(respuesta).getAsJsonObject());
     }
 
     @POST
     @Produces(javax.ws.rs.core.MediaType.APPLICATION_JSON)
     @Consumes(javax.ws.rs.core.MediaType.APPLICATION_JSON)
-    @Path("/actualizaSolicitud")
-    public String actualizaSolicitud(@WebParam(name = "data") String data) throws Exception {
+    @Path("/actualizaEstatus")
+    public String actualizaEstatus(@WebParam(name = "data") String data) throws Exception {
         String respuesta;
         JsonObject datosJob = new JsonParser().parse(data).getAsJsonObject();
-        respuesta = solicitudesDao.actualizaSolicitud(gson, datosJob);
+        respuesta = estatusDao.actualizaEstatus(gson, datosJob);
         return gson.toJson(new JsonParser().parse(respuesta).getAsJsonObject());
     }
 
     @POST
     @Produces(javax.ws.rs.core.MediaType.APPLICATION_JSON)
     @Consumes(javax.ws.rs.core.MediaType.APPLICATION_JSON)
-    @Path("/eliminaSolicitud")
-    public String eliminaSolicitud(@WebParam(name = "data") String data) throws Exception {
+    @Path("/eliminaEstatus")
+    public String eliminaEstatus(@WebParam(name = "data") String data) throws Exception {
         String respuesta;
         JsonObject datosJob = new JsonParser().parse(data).getAsJsonObject();
-        respuesta = solicitudesDao.eliminaSolicitud(gson, datosJob);
+        respuesta = estatusDao.eliminaEstatus(gson, datosJob);
         return gson.toJson(new JsonParser().parse(respuesta).getAsJsonObject());
     }
 }

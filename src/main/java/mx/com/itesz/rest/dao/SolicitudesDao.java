@@ -5,9 +5,13 @@
  */
 package mx.com.itesz.rest.dao;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import java.sql.PreparedStatement;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import mx.com.itesz.rest.dto.Solicitudes;
 import mx.com.itesz.rest.utils.Conexion;
 import mx.com.itesz.rest.utils.FormUtil;
 
@@ -93,5 +97,79 @@ public class SolicitudesDao {
             }
         }
         return jsonData;
+    }
+
+    public String insertaSolicitud(Gson gson, JsonObject datosJob) throws Exception {
+        String insert = "INSERT INTO SOLICITUDES(ID_SOLICITUD, NOCONTROL, NOEMPLEADO, ID_OPCION, FECHA_ELABORACION, NOMBRE_PROYECTO, ESTATUS) VALUES(?,?,?,?,?,?,?)";
+        PreparedStatement ps = null;
+        boolean insertaRegistro = false;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        java.util.Date fechaElaboracion;
+        try {
+            ps = Conexion.getInstance().getCn().prepareStatement(insert);
+            ps.setInt(1, Integer.parseInt(datosJob.get("idSolicitud").getAsString()));
+            ps.setString(2, datosJob.get("noControl").getAsString());
+            ps.setInt(3, Integer.parseInt(datosJob.get("noEmpleado").getAsString()));
+            ps.setInt(4, Integer.parseInt(datosJob.get("idOpcion").getAsString()));
+
+            fechaElaboracion = sdf.parse(datosJob.get("fechaElaboracion").getAsString());
+            ps.setDate(5, new java.sql.Date(fechaElaboracion.getTime()));
+            ps.setString(6, datosJob.get("nombreProyecto").getAsString());
+            ps.setString(7, datosJob.get("estatus").getAsString());
+
+            if (ps.executeUpdate() > 0) {
+                insertaRegistro = true;
+            }
+        } catch (Exception ex) {
+            System.err.println(ex.getMessage());
+        }
+        return "{insertaRegistro: " + insertaRegistro + "}";
+    }
+
+    public String actualizaSolicitud(Gson gson, JsonObject datosJob) throws Exception {
+        String update = "UPDATE SOLICITUDES SET NOCONTROL = ?, NOEMPLEADO = ?, ID_OPCION = ?, FECHA_ELABORACION = ?, NOMBRE_PROYECTO = ?, ESTATUS = ? WHERE ID_SOLICITUD = ?";
+        PreparedStatement ps = null;
+        boolean actualizaRegistro = false;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        java.util.Date fechaElaboracion;
+        try {
+            ps = Conexion.getInstance().getCn().prepareStatement(update);
+            ps.setString(1, datosJob.get("noControl").getAsString());
+            ps.setInt(2, Integer.parseInt(datosJob.get("noEmpleado").getAsString()));
+            ps.setInt(3, Integer.parseInt(datosJob.get("idOpcion").getAsString()));
+
+            fechaElaboracion = sdf.parse(datosJob.get("fechaElaboracion").getAsString());
+            ps.setDate(4, new java.sql.Date(fechaElaboracion.getTime()));
+            ps.setString(5, datosJob.get("nombreProyecto").getAsString());
+            ps.setString(6, datosJob.get("estatus").getAsString());
+            ps.setInt(7, Integer.parseInt(datosJob.get("idSolicitud").getAsString()));
+
+            if (ps.executeUpdate() > 0) {
+                actualizaRegistro = true;
+            }
+        } catch (Exception ex) {
+            System.err.println(ex.getMessage());
+        }
+        return "{actualizaRegistro: " + actualizaRegistro + "}";
+    }
+
+    public String eliminaSolicitud(Gson gson, JsonObject datosJob) throws Exception {
+        String delete = "DELETE FROM SOLICITUDES WHERE ID_SOLICITUD = ?";
+        PreparedStatement ps = null;
+        boolean eliminaRegistro = false;
+        Solicitudes solicitud;
+        try {
+            solicitud = gson.fromJson(datosJob, Solicitudes.class);
+
+            ps = Conexion.getInstance().getCn().prepareStatement(delete);
+            ps.setInt(1, solicitud.getIdSolicitud());
+
+            if (ps.executeUpdate() > 0) {
+                eliminaRegistro = true;
+            }
+        } catch (Exception ex) {
+            System.err.println(ex.getMessage());
+        }
+        return "{eliminaRegistro: " + eliminaRegistro + "}";
     }
 }

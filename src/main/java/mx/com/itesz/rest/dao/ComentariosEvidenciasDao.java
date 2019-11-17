@@ -8,38 +8,28 @@ package mx.com.itesz.rest.dao;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import java.sql.PreparedStatement;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import mx.com.itesz.rest.dto.Salas;
+import mx.com.itesz.rest.dto.ComentariosEvidencias;
 import mx.com.itesz.rest.utils.Conexion;
 import mx.com.itesz.rest.utils.FormUtil;
 
 /**
  *
- * @author checo
+ * @author sergiov
  */
-public class SalasDao {
+public class ComentariosEvidenciasDao {
 
-    public String getSalasDisponibles(String fechaPresentacion, String horaInicio, String horaFin) throws Exception {
+    public String getComentariosEvidencias() throws Exception {
         List<Object[]> lista = new ArrayList<>();
         String jsonData = "",
-                mapping[] = new String[]{"idSala", "cveSala", "descripcion"};
+                mapping[] = new String[]{"idComentarioEvidencia", "idEvidencia", "fecha", "observaciones"};
         PreparedStatement ps = null;
         try {
             StringBuilder query = new StringBuilder();
-            query.append("SELECT * FROM SALAS ");
-            query.append("WHERE ID_SALA NOT IN( ");
-            query.append("SELECT id_sala FROM ACTOS ");
-            query.append("WHERE fecha_presentacion =  str_to_date(?, '%Y-%m-%d') ");
-            query.append("and hora_inicio between str_to_date(?, '%H:%i:%s') and   str_to_date(?,'%H:%i:%s') ");
-            query.append("or hora_fin between str_to_date(?, '%H:%i:%s') and   str_to_date(?,'%H:%i:%s'))");
-
+            query.append("SELECT * FROM COMENTARIOS_EVIDENCIAS ");
             ps = Conexion.getInstance().getCn().prepareStatement(query.toString());
-            ps.setString(1, fechaPresentacion);
-            ps.setString(2, horaInicio);
-            ps.setString(3, horaFin);
-            ps.setString(4, horaInicio);
-            ps.setString(5, horaFin);
             lista = FormUtil.executeQuery(ps);
             jsonData = FormUtil.generaJsonString(true, "Proceso realizado correctamente", lista.size(), lista, mapping);
 
@@ -53,18 +43,20 @@ public class SalasDao {
         return jsonData;
     }
 
-    public String insertaSala(Gson gson, JsonObject datosJob) throws Exception {
-        String insert = "INSERT INTO SALAS(ID_SALA, CVE_SALA, DESCRIPCION) VALUES(?,?,?)";
+    public String insertaComentarioEvidencia(Gson gson, JsonObject datosJob) throws Exception {
+        String insert = "INSERT INTO COMENTARIOS_EVIDENCIAS(ID_COMENTARIO_EVIDENCIA, ID_EVIDENCIA, FECHA, OBSERVACIONES) VALUES(?,?,?,?)";
         PreparedStatement ps = null;
         boolean insertaRegistro = false;
-        Salas sala;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        java.util.Date fecha;
         try {
-            sala = gson.fromJson(datosJob, Salas.class);
-
             ps = Conexion.getInstance().getCn().prepareStatement(insert);
-            ps.setInt(1, sala.getIdSala());
-            ps.setString(2, sala.getCveSala());
-            ps.setString(3, sala.getDescripcion());
+            ps.setInt(1, Integer.parseInt(datosJob.get("idComentarioEvidencia").getAsString()));
+            ps.setInt(2, Integer.parseInt(datosJob.get("idEvidencia").getAsString()));
+
+            fecha = sdf.parse(datosJob.get("fecha").getAsString());
+            ps.setDate(3, new java.sql.Date(fecha.getTime()));
+            ps.setString(4, datosJob.get("observaciones").getAsString());
 
             if (ps.executeUpdate() > 0) {
                 insertaRegistro = true;
@@ -75,18 +67,21 @@ public class SalasDao {
         return "{insertaRegistro: " + insertaRegistro + "}";
     }
 
-    public String actualizaSala(Gson gson, JsonObject datosJob) throws Exception {
-        String update = "UPDATE SALAS SET CVE_SALA = ?, DESCRIPCION = ? WHERE ID_SALA = ?";
+    public String actualizaComentarioEvidencia(Gson gson, JsonObject datosJob) throws Exception {
+        String update = "UPDATE COMENTARIOS_EVIDENCIAS SET ID_EVIDENCIA = ?, FECHA = ?, OBSERVACIONES = ? WHERE ID_COMENTARIO_EVIDENCIA = ?";
         PreparedStatement ps = null;
         boolean actualizaRegistro = false;
-        Salas sala;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        java.util.Date fecha;
         try {
-            sala = gson.fromJson(datosJob, Salas.class);
-
             ps = Conexion.getInstance().getCn().prepareStatement(update);
-            ps.setString(1, sala.getCveSala());
-            ps.setString(2, sala.getDescripcion());
-            ps.setInt(3, sala.getIdSala());
+            ps.setInt(1, Integer.parseInt(datosJob.get("idEvidencia").getAsString()));
+
+            fecha = sdf.parse(datosJob.get("fecha").getAsString());
+            ps.setDate(2, new java.sql.Date(fecha.getTime()));
+            ps.setString(3, datosJob.get("observaciones").getAsString());
+
+            ps.setInt(4, Integer.parseInt(datosJob.get("idComentarioEvidencia").getAsString()));
 
             if (ps.executeUpdate() > 0) {
                 actualizaRegistro = true;
@@ -97,16 +92,16 @@ public class SalasDao {
         return "{actualizaRegistro: " + actualizaRegistro + "}";
     }
 
-    public String eliminaSala(Gson gson, JsonObject datosJob) throws Exception {
-        String delete = "DELETE FROM SALAS WHERE ID_SALA = ?";
+    public String eliminaComentarioEvidencia(Gson gson, JsonObject datosJob) throws Exception {
+        String delete = "DELETE FROM COMENTARIOS_EVIDENCIAS WHERE ID_COMENTARIO_EVIDENCIA = ?";
         PreparedStatement ps = null;
         boolean eliminaRegistro = false;
-        Salas sala;
+        ComentariosEvidencias comentarioEvidencia;
         try {
-            sala = gson.fromJson(datosJob, Salas.class);
+            comentarioEvidencia = gson.fromJson(datosJob, ComentariosEvidencias.class);
 
             ps = Conexion.getInstance().getCn().prepareStatement(delete);
-            ps.setInt(1, sala.getIdSala());
+            ps.setInt(1, comentarioEvidencia.getIdComentarioEvidencia());
 
             if (ps.executeUpdate() > 0) {
                 eliminaRegistro = true;
