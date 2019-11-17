@@ -8,6 +8,8 @@ package mx.com.itesz.rest.dao;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import java.sql.PreparedStatement;
+import java.util.ArrayList;
+import java.util.List;
 import mx.com.itesz.rest.dto.Salas;
 import mx.com.itesz.rest.facade.impl.FacadeUtilsImpl;
 import mx.com.itesz.rest.utils.Conexion;
@@ -20,31 +22,15 @@ public class SalasDao {
 
     public String getSalasDisponibles(String fechaPresentacion, String horaInicio, String horaFin) throws Exception {
         String jsonData = "";
-        PreparedStatement ps = null;
+        FacadeUtilsImpl facade = new FacadeUtilsImpl();
+        List<Object[]> lista = new ArrayList<>();
         try {
-            StringBuilder query = new StringBuilder();
-            query.append("SELECT * FROM SALAS ");
-            query.append("WHERE ID_SALA NOT IN( ");
-            query.append("SELECT id_sala FROM ACTOS ");
-            query.append("WHERE fecha_presentacion =  str_to_date(?, '%Y-%m-%d') ");
-            query.append("and hora_inicio between str_to_date(?, '%H:%i:%s') and   str_to_date(?,'%H:%i:%s') ");
-            query.append("or hora_fin between str_to_date(?, '%H:%i:%s') and   str_to_date(?,'%H:%i:%s'))");
+            lista = facade.consultaSalasDisponibles(fechaPresentacion, horaInicio, horaFin);
 
-            ps = Conexion.getInstance().getCn().prepareStatement(query.toString());
-            ps.setString(1, fechaPresentacion);
-            ps.setString(2, horaInicio);
-            ps.setString(3, horaFin);
-            ps.setString(4, horaInicio);
-            ps.setString(5, horaFin);
-            
-            jsonData = new FacadeUtilsImpl().generaJsonString(ps, "getSalasDisponibles");
+            jsonData = facade.generaJsonString(lista, "getSalasDisponibles");
 
         } catch (Exception ex) {
             System.err.println(ex.getMessage());
-        } finally {
-            if (ps != null) {
-                ps.close();
-            }
         }
         return jsonData;
     }

@@ -7,6 +7,7 @@ package mx.com.itesz.rest.facade;
 
 import com.google.gson.JsonObject;
 import java.sql.PreparedStatement;
+import java.util.List;
 
 /**
  *
@@ -14,9 +15,13 @@ import java.sql.PreparedStatement;
  */
 public interface IFacade {
     
+    public List<Object[]> consultaSalasDisponibles(String fechaPresentacion, String horaInicio, String horaFin);
+    
     public String[] getHeadersConsulta(String metodo);
 
+    public String generaJsonString(List<Object[]> registros, String metodo);
+    
     public String generaJsonString(PreparedStatement ps, String metodo);
-
+    
     public boolean enviaCorreo(int opcion, JsonObject datosJob, java.util.Date fechaPresentacion);
 }

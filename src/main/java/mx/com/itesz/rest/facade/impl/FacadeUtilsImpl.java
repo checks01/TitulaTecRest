@@ -9,7 +9,9 @@ import com.google.gson.JsonObject;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import mx.com.msc.servicios.ws.EmailService;
 import mx.com.msc.servicios.ws.EmailService_Service;
 import net.sf.json.JSONArray;
@@ -18,6 +20,9 @@ import net.sf.json.JsonConfig;
 import net.sf.json.util.CycleDetectionStrategy;
 import mx.com.itesz.rest.facade.IFacade;
 import mx.com.itesz.rest.facade.utils.FacadeUtils;
+import mx.com.msc.servicios.ws.AnyTypeArray;
+import mx.com.msc.servicios.ws.SalasDisponiblesService;
+import mx.com.msc.servicios.ws.SalasDisponiblesService_Service;
 
 /**
  *
@@ -38,8 +43,50 @@ public class FacadeUtilsImpl implements IFacade {
     }
 
     @Override
+    public List<Object[]> consultaSalasDisponibles(String fechaPresentacion, String horaInicio, String horaFin) {
+        List<AnyTypeArray> listaSoap = new ArrayList<>();
+        List<Object[]> lista = new ArrayList<>();
+        try {
+            SalasDisponiblesService_Service salasServiceSoap = new SalasDisponiblesService_Service();
+            SalasDisponiblesService port = salasServiceSoap.getSalasDisponiblesServicePort();
+            listaSoap = port.consultaSalasDisponibles(fechaPresentacion, horaInicio, horaFin);
+            for (AnyTypeArray registro : listaSoap) {
+                lista.add(registro.getItem().toArray());
+            }
+        } catch (Exception ex) {
+            System.err.println(ex.getMessage());
+        }
+        return lista;
+    }
+
+    @Override
     public String[] getHeadersConsulta(String metodo) {
         return new FacadeUtils().getHeaders(metodo);
+    }
+
+    @Override
+    public String generaJsonString(List<Object[]> records, String metodo) {
+        String jsonData = "",
+                headers[];
+        JSONObject datosJob;
+        try {
+            datosJob = new JSONObject();
+            headers = this.getHeadersConsulta(metodo);
+
+            for (Object[] registro : records) {
+                for (int idx = 0; idx < headers.length; idx++) {
+                    datosJob.put(headers[idx], registro[idx]);
+                }
+                registros.add(datosJob);
+            }
+        } catch (Exception ex) {
+            success = false;
+            mensaje = "Ocurrió un error durante el proceso: ".concat(ex.getMessage());
+            System.err.println(ex.getMessage());
+        }finally{
+            jsonData = this.construyeJson();
+        }
+        return jsonData;
     }
 
     @Override

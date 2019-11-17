@@ -27,6 +27,9 @@ public class ObjectFactory {
     private final static QName _GeneraReporte_QNAME = new QName("http://servicios.msc.mx.com/", "generaReporte");
     private final static QName _EnviaCorreo_QNAME = new QName("http://servicios.msc.mx.com/", "enviaCorreo");
     private final static QName _EnviaCorreoResponse_QNAME = new QName("http://servicios.msc.mx.com/", "enviaCorreoResponse");
+    private final static QName _ConsultaSalasDisponiblesResponse_QNAME = new QName("http://servicios.msc.mx.com/", "consultaSalasDisponiblesResponse");
+    private final static QName _Exception_QNAME = new QName("http://servicios.msc.mx.com/", "Exception");
+    private final static QName _ConsultaSalasDisponibles_QNAME = new QName("http://servicios.msc.mx.com/", "consultaSalasDisponibles");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of
@@ -122,6 +125,68 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://servicios.msc.mx.com/", name = "enviaCorreoResponse")
     public JAXBElement<EnviaCorreoResponse> createEnviaCorreoResponse(EnviaCorreoResponse value) {
         return new JAXBElement<EnviaCorreoResponse>(_EnviaCorreoResponse_QNAME, EnviaCorreoResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link ConsultaSalasDisponibles }
+     *
+     */
+    public ConsultaSalasDisponibles createConsultaSalasDisponibles() {
+        return new ConsultaSalasDisponibles();
+    }
+
+    /**
+     * Create an instance of {@link Exception }
+     *
+     */
+    public Exception createException() {
+        return new Exception();
+    }
+
+    /**
+     * Create an instance of {@link ConsultaSalasDisponiblesResponse }
+     *
+     */
+    public ConsultaSalasDisponiblesResponse createConsultaSalasDisponiblesResponse() {
+        return new ConsultaSalasDisponiblesResponse();
+    }
+
+    /**
+     * Create an instance of {@link AnyTypeArray }
+     *
+     */
+    public AnyTypeArray createAnyTypeArray() {
+        return new AnyTypeArray();
+    }
+
+    /**
+     * Create an instance of
+     * {@link JAXBElement }{@code <}{@link ConsultaSalasDisponiblesResponse }{@code >}}
+     *
+     */
+    @XmlElementDecl(namespace = "http://servicios.msc.mx.com/", name = "consultaSalasDisponiblesResponse")
+    public JAXBElement<ConsultaSalasDisponiblesResponse> createConsultaSalasDisponiblesResponse(ConsultaSalasDisponiblesResponse value) {
+        return new JAXBElement<ConsultaSalasDisponiblesResponse>(_ConsultaSalasDisponiblesResponse_QNAME, ConsultaSalasDisponiblesResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of
+     * {@link JAXBElement }{@code <}{@link Exception }{@code >}}
+     *
+     */
+    @XmlElementDecl(namespace = "http://servicios.msc.mx.com/", name = "Exception")
+    public JAXBElement<Exception> createException(Exception value) {
+        return new JAXBElement<Exception>(_Exception_QNAME, Exception.class, null, value);
+    }
+
+    /**
+     * Create an instance of
+     * {@link JAXBElement }{@code <}{@link ConsultaSalasDisponibles }{@code >}}
+     *
+     */
+    @XmlElementDecl(namespace = "http://servicios.msc.mx.com/", name = "consultaSalasDisponibles")
+    public JAXBElement<ConsultaSalasDisponibles> createConsultaSalasDisponibles(ConsultaSalasDisponibles value) {
+        return new JAXBElement<ConsultaSalasDisponibles>(_ConsultaSalasDisponibles_QNAME, ConsultaSalasDisponibles.class, null, value);
     }
 
 }
