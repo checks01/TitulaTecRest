@@ -8,16 +8,16 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Clase Java para enviaCorreoResponse complex type.
+ * <p>Clase Java para validaUsuarioResponse complex type.
  * 
  * <p>El siguiente fragmento de esquema especifica el contenido que se espera que haya en esta clase.
  * 
  * <pre>
- * &lt;complexType name="enviaCorreoResponse">
+ * &lt;complexType name="validaUsuarioResponse">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="return" type="{http://www.w3.org/2001/XMLSchema}boolean"/>
+ *         &lt;element name="return" type="{http://www.w3.org/2001/XMLSchema}int"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -27,19 +27,19 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "enviaCorreoResponse", propOrder = {
+@XmlType(name = "validaUsuarioResponse", propOrder = {
     "_return"
 })
-public class EnviaCorreoResponse {
+public class ValidaUsuarioResponse {
 
     @XmlElement(name = "return")
-    protected boolean _return;
+    protected int _return;
 
     /**
      * Obtiene el valor de la propiedad return.
      * 
      */
-    public boolean isReturn() {
+    public int getReturn() {
         return _return;
     }
 
@@ -47,7 +47,7 @@ public class EnviaCorreoResponse {
      * Define el valor de la propiedad return.
      * 
      */
-    public void setReturn(boolean value) {
+    public void setReturn(int value) {
         this._return = value;
     }
 

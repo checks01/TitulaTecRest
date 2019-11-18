@@ -14,6 +14,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import mx.com.itesz.rest.dao.UsuariosDao;
 
 /**
@@ -69,5 +70,16 @@ public class UsuariosService {
         JsonObject datosJob = new JsonParser().parse(data).getAsJsonObject();
         respuesta = usuariosDao.eliminaUsuario(gson, datosJob);
         return gson.toJson(new JsonParser().parse(respuesta).getAsJsonObject());
+    }
+
+    @GET
+    @Produces(javax.ws.rs.core.MediaType.APPLICATION_JSON)
+    @Path("/validaUsuario")
+    public String validaUsuario(
+            @QueryParam(value = "correo") String correo,
+            @QueryParam(value = "password") String password
+    ) throws Exception {
+        int valid = usuariosDao.getValidaUsuario(correo, password);
+        return "{\"total\":" + valid + "}";
     }
 }

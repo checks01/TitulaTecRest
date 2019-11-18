@@ -11,6 +11,9 @@ import java.sql.PreparedStatement;
 import mx.com.itesz.rest.dto.Usuarios;
 import mx.com.itesz.rest.facade.impl.FacadeUtilsImpl;
 import mx.com.itesz.rest.utils.Conexion;
+import mx.com.msc.servicios.ws.GeneraReporte.Parametros;
+import mx.com.msc.servicios.ws.UsuariosService;
+import mx.com.msc.servicios.ws.UsuariosService_Service;
 
 /**
  *
@@ -25,7 +28,7 @@ public class UsuariosDao {
             StringBuilder query = new StringBuilder();
             query.append("SELECT * FROM USUARIOS ");
             ps = Conexion.getInstance().getCn().prepareStatement(query.toString());
-            
+
             jsonData = new FacadeUtilsImpl().generaJsonString(ps, "getUsuarios");
 
         } catch (Exception ex) {
@@ -110,6 +113,12 @@ public class UsuariosDao {
             System.err.println(ex.getMessage());
         }
         return "{eliminaRegistro: " + eliminaRegistro + "}";
+    }
+
+    public static int getValidaUsuario(String correo, String password) {
+        UsuariosService_Service service = new UsuariosService_Service();
+        UsuariosService port = service.getUsuariosServicePort();
+        return port.validaUsuario(correo, password);
     }
 
 }

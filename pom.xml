@@ -156,6 +156,7 @@
                         <wsdlUrl>http://localhost:8080/UtilsTecWs/Reportes?wsdl</wsdlUrl>
                         <wsdlUrl>http://localhost:8080/UtilsTecWs/EmailService?wsdl</wsdlUrl>
                         <wsdlUrl>http://localhost:8080/UtilsTecWs/SalasDisponiblesService?wsdl</wsdlUrl>
+                        <wsdlUrl>http://localhost:8080/UtilsTecWs/UsuariosService?wsdl</wsdlUrl>
                     </wsdlUrls>
                 </configuration>
             </plugin>
