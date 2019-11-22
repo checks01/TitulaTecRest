@@ -10,10 +10,13 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import javax.jws.WebParam;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import mx.com.itesz.rest.dao.AlumnosDao;
 
 /**
@@ -48,7 +51,7 @@ public class AlumnosService {
         return gson.toJson(new JsonParser().parse(respuesta).getAsJsonObject());
     }
 
-    @POST
+    @PUT
     @Produces(javax.ws.rs.core.MediaType.APPLICATION_JSON)
     @Consumes(javax.ws.rs.core.MediaType.APPLICATION_JSON)
     @Path("/actualizaAlumno")
@@ -59,11 +62,11 @@ public class AlumnosService {
         return gson.toJson(new JsonParser().parse(respuesta).getAsJsonObject());
     }
 
-    @POST
+    @DELETE
     @Produces(javax.ws.rs.core.MediaType.APPLICATION_JSON)
     @Consumes(javax.ws.rs.core.MediaType.APPLICATION_JSON)
     @Path("/eliminaAlumno")
-    public String eliminaAlumno(@WebParam(name = "data") String data) throws Exception {
+    public String eliminaAlumno(@QueryParam(value = "data") String data) throws Exception {
         String respuesta;
         JsonObject datosJob = new JsonParser().parse(data).getAsJsonObject();
         respuesta = alumnosDao.eliminaAlumno(gson, datosJob);
