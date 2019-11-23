@@ -11,7 +11,6 @@ import java.sql.PreparedStatement;
 import mx.com.itesz.rest.dto.Usuarios;
 import mx.com.itesz.rest.facade.impl.FacadeUtilsImpl;
 import mx.com.itesz.rest.utils.Conexion;
-import mx.com.msc.servicios.ws.GeneraReporte.Parametros;
 import mx.com.msc.servicios.ws.UsuariosService;
 import mx.com.msc.servicios.ws.UsuariosService_Service;
 
